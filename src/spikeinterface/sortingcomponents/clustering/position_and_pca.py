@@ -94,6 +94,7 @@ class PositionAndPCAClustering:
         location_keys = ["x", "y"]
         locations = np.stack([peak_locations[k] for k in location_keys], axis=1)
 
+        print("hello")
         if params["use_amplitude"]:
             to_cluster_from = np.hstack((locations, peaks["amplitude"][:, np.newaxis]))
         else:
