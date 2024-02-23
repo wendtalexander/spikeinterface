@@ -2,8 +2,9 @@ from __future__ import annotations
 from pathlib import Path
 
 import numpy as np
+from IPython import embed
 
-from probeinterface import Probe, ProbeGroup, write_probeinterface, read_probeinterface, select_axes
+from probeinterface import Probe, ProbeGroup, write_probeinterface, read_probeinterface, select_axes, generate_multi_shank
 
 from .base import BaseExtractor
 from .core_tools import check_json
@@ -242,10 +243,19 @@ class BaseRecordingSnippets(BaseExtractor):
                 raise ValueError("There is no Probe attached to this recording. Use set_probe(...) to attach one.")
             else:
                 warn("There is no Probe attached to this recording. Creating a dummy one with contact positions")
-                probe = self.create_dummy_probe_from_locations(positions)
-                #  probe.create_auto_shape()
-                probegroup = ProbeGroup()
-                probegroup.add_probe(probe)
+                warn("added a 16 channels probe (alex)")
+                multishank = generate_multi_shank(
+                    num_shank=16,
+                    num_columns=1,
+                    num_contact_per_column=1,
+                    shank_pitch=[50, 0],
+                    contact_shape_params=dict(radius=7.51),
+                    ypitch=20,
+                )
+                multishank.set_shank_ids(np.arange(16))
+                multishank.set_device_channel_indices(np.arange(16))
+                return multishank
+
         else:
             probegroup = ProbeGroup.from_numpy(arr)
             for probe_index, probe in enumerate(probegroup.probes):
