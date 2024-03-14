@@ -1,16 +1,22 @@
 from __future__ import annotations
+
 from pathlib import Path
+from warnings import warn
 
 import numpy as np
 from IPython import embed
-
-from probeinterface import Probe, ProbeGroup, write_probeinterface, read_probeinterface, select_axes, generate_multi_shank
+from probeinterface import (
+    Probe,
+    ProbeGroup,
+    generate_multi_shank,
+    read_probeinterface,
+    select_axes,
+    write_probeinterface,
+)
 
 from .base import BaseExtractor
 from .core_tools import check_json
 from .recording_tools import check_probe_do_not_overlap
-
-from warnings import warn
 
 
 class BaseRecordingSnippets(BaseExtractor):
@@ -257,6 +263,7 @@ class BaseRecordingSnippets(BaseExtractor):
                 return multishank
 
         else:
+            warn("There is a Probe attached to this recording. Creating a ProbeGroup with contact_vector")
             probegroup = ProbeGroup.from_numpy(arr)
             for probe_index, probe in enumerate(probegroup.probes):
                 contour = self.get_annotation(f"probe_{probe_index}_planar_contour")
@@ -538,3 +545,4 @@ class BaseRecordingSnippets(BaseExtractor):
             elif outputs == "dict":
                 recordings[value] = subrec
         return recordings
+
